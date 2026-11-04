@@ -1,0 +1,483 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cotizador.MainPage"
+             Title="Cotizador"
+             BackgroundColor="{StaticResource Bg}">
+
+    <ContentPage.Resources>
+
+        <!-- ============ PALETA (neutros + un solo acento) ============ -->
+        <Color x:Key="Bg">#0F1115</Color>
+        <Color x:Key="Surface">#171A21</Color>
+        <Color x:Key="SurfaceAlt">#1E222B</Color>
+        <Color x:Key="Line">#2A2F3A</Color>
+        <Color x:Key="TextMain">#E6E8EC</Color>
+        <Color x:Key="TextMuted">#8B93A1</Color>
+        <Color x:Key="Accent">#C9A227</Color>
+        <Color x:Key="OnAccent">#14110A</Color>
+        <Color x:Key="Positive">#6FBF8E</Color>
+        <Color x:Key="Danger">#D9777F</Color>
+
+        <!-- ============ ESTILOS ============ -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="{StaticResource Surface}"/>
+            <Setter Property="Stroke" Value="{StaticResource Line}"/>
+            <Setter Property="StrokeThickness" Value="1"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="StrokeShape" Value="RoundRectangle 12"/>
+        </Style>
+
+        <Style x:Key="Field" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="{StaticResource SurfaceAlt}"/>
+            <Setter Property="Stroke" Value="{StaticResource Line}"/>
+            <Setter Property="StrokeThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="StrokeShape" Value="RoundRectangle 8"/>
+        </Style>
+
+        <Style x:Key="Panel" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="{StaticResource SurfaceAlt}"/>
+            <Setter Property="Stroke" Value="{StaticResource Line}"/>
+            <Setter Property="StrokeThickness" Value="1"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
+        </Style>
+
+        <Style TargetType="Entry">
+            <Setter Property="BackgroundColor" Value="Transparent"/>
+            <Setter Property="TextColor" Value="{StaticResource TextMain}"/>
+            <Setter Property="PlaceholderColor" Value="{StaticResource TextMuted}"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="Picker">
+            <Setter Property="BackgroundColor" Value="Transparent"/>
+            <Setter Property="TextColor" Value="{StaticResource TextMain}"/>
+            <Setter Property="TitleColor" Value="{StaticResource TextMuted}"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Color" Value="{StaticResource Accent}"/>
+        </Style>
+
+        <Style x:Key="SectionTitle" TargetType="Label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="TextColor" Value="{StaticResource TextMuted}"/>
+            <Setter Property="CharacterSpacing" Value="1.2"/>
+        </Style>
+
+        <Style x:Key="Caption" TargetType="Label">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="TextColor" Value="{StaticResource TextMuted}"/>
+        </Style>
+
+        <Style x:Key="Body" TargetType="Label">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="TextColor" Value="{StaticResource TextMain}"/>
+        </Style>
+
+        <Style x:Key="BtnPrimary" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="{StaticResource Accent}"/>
+            <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="HeightRequest" Value="46"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+
+        <Style x:Key="BtnSecondary" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Transparent"/>
+            <Setter Property="BorderColor" Value="{StaticResource Line}"/>
+            <Setter Property="BorderWidth" Value="1"/>
+            <Setter Property="TextColor" Value="{StaticResource TextMain}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="HeightRequest" Value="46"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+
+        <Style x:Key="BtnSmall" TargetType="Button" BasedOn="{StaticResource BtnSecondary}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HeightRequest" Value="34"/>
+            <Setter Property="Padding" Value="12,0"/>
+        </Style>
+
+        <Style x:Key="BtnChip" TargetType="Button" BasedOn="{StaticResource BtnSecondary}">
+            <Setter Property="BackgroundColor" Value="{StaticResource SurfaceAlt}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="HeightRequest" Value="38"/>
+            <Setter Property="Padding" Value="6,0"/>
+        </Style>
+
+        <Style x:Key="BtnIconDanger" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Transparent"/>
+            <Setter Property="BorderColor" Value="{StaticResource Line}"/>
+            <Setter Property="BorderWidth" Value="1"/>
+            <Setter Property="TextColor" Value="{StaticResource Danger}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HeightRequest" Value="32"/>
+            <Setter Property="WidthRequest" Value="36"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*, Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="16,20,16,24" Spacing="16" MaximumWidthRequest="920">
+
+                <!-- Navegador oculto para extraer precios (no tocar) -->
+                <WebView x:Name="webExtractor" HeightRequest="1" WidthRequest="1" Opacity="0.01" Navigated="OnWebExtractorNavigated"/>
+
+                <!-- ENCABEZADO -->
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Cotizador" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource TextMain}"/>
+                        <Label Text="Soporte técnico, software y ensamble de PC" Style="{StaticResource Caption}"/>
+                    </VerticalStackLayout>
+                    <Button x:Name="btnToggleHistorial" Grid.Column="1" Text="Historial" Clicked="OnToggleHistorialClicked" Style="{StaticResource BtnSmall}" VerticalOptions="Center"/>
+                </Grid>
+
+                <!-- HISTORIAL (SUPABASE) -->
+                <Border x:Name="panelHistorial" IsVisible="False" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+                            <Label Grid.Column="0" Text="HISTORIAL" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                            <Button Grid.Column="1" Text="Actualizar" Clicked="OnRefrescarHistorialClicked" Style="{StaticResource BtnSmall}"/>
+                            <Button Grid.Column="2" Text="Cerrar" Clicked="OnCerrarHistorialClicked" Style="{StaticResource BtnSmall}"/>
+                        </Grid>
+
+                        <Border Style="{StaticResource Field}">
+                            <Entry x:Name="txtBuscarHistorial" Placeholder="Filtrar por cliente, equipo o teléfono" TextChanged="OnFiltroHistorialChanged"/>
+                        </Border>
+
+                        <Label x:Name="lblEstadoHistorial" Text="Cargando historial..." Style="{StaticResource Caption}"/>
+
+                        <CollectionView x:Name="listaHistorial" MaximumHeightRequest="260">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource Panel}" Padding="12,8" Margin="0,3">
+                                        <Grid ColumnDefinitions="*, Auto, Auto, Auto" ColumnSpacing="8">
+                                            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                                                <Label Text="{Binding TituloResumen}" Style="{StaticResource Body}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                                <Label Text="{Binding SubtituloResumen}" Style="{StaticResource Caption}" LineBreakMode="TailTruncation"/>
+                                            </VerticalStackLayout>
+
+                                            <Label Grid.Column="1" Text="{Binding Total, StringFormat='${0:N0}'}" TextColor="{StaticResource Accent}" FontAttributes="Bold" FontSize="14" VerticalOptions="Center"/>
+
+                                            <Button Grid.Column="2" Text="Abrir" Clicked="OnCargarCotizacionHistorialClicked" CommandParameter="{Binding .}" Style="{StaticResource BtnSmall}" HeightRequest="32"/>
+
+                                            <Button Grid.Column="3" Text="✕" Clicked="OnEliminarCotizacionHistorialClicked" CommandParameter="{Binding .}" Style="{StaticResource BtnIconDanger}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 1. CLIENTE Y SERVICIOS -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="01  CLIENTE Y SERVICIOS" Style="{StaticResource SectionTitle}"/>
+
+                        <Border Style="{StaticResource Field}">
+                            <Entry x:Name="txtCliente" Placeholder="Nombre del cliente" MaxLength="60" TextChanged="OnSoloLetrasChanged"/>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <Border Grid.Column="0" Style="{StaticResource Field}">
+                                <Entry x:Name="txtTelefono" Placeholder="WhatsApp (10 dígitos)" MaxLength="10" TextChanged="OnSoloEnterosChanged" Keyboard="Numeric"/>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource Field}">
+                                <Entry x:Name="txtEquipo" Placeholder="Equipo (ej. Laptop HP)" MaxLength="70"/>
+                            </Border>
+                        </Grid>
+
+                        <BoxView HeightRequest="1" Color="{StaticResource Line}" Margin="0,4"/>
+
+                        <Label Text="Agregar servicio o mano de obra" Style="{StaticResource Body}" FontAttributes="Bold"/>
+
+                        <Grid ColumnDefinitions="76, *" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Equipos" Style="{StaticResource Caption}"/>
+                                <Border Style="{StaticResource Field}" Padding="4,0">
+                                    <Entry x:Name="txtCantidadServicio" Text="1" MaxLength="2" TextChanged="OnSoloEnterosChanged" Keyboard="Numeric" HorizontalTextAlignment="Center"/>
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Servicio" Style="{StaticResource Caption}"/>
+                                <Border Style="{StaticResource Field}">
+                                    <Picker x:Name="pickerManoObra" Title="Selecciona el servicio">
+                                        <Picker.ItemsSource>
+                                            <x:Array Type="{x:Type x:String}">
+                                                <x:String>💿 Formateo e Instalación de Sistema Operativo ($400 c/u)</x:String>
+                                                <x:String>🔑 Formateo y Licenciamiento Oficial (Windows + Office) ($650 c/u)</x:String>
+                                                <x:String>📄 Activación de Licencia Oficial (Windows / Office) ($300 c/u)</x:String>
+                                                <x:String>🧹 Mantenimiento Preventivo ($450 c/u)</x:String>
+                                                <x:String>🔧 Instalación de Componente (Hardware) ($350 c/u)</x:String>
+                                                <x:String>🚀 Actualización de Hardware y Mantenimiento Preventivo ($550 c/u)</x:String>
+                                                <x:String>💾 Actualización de Hardware, Clonación de Sistema y Mantenimiento ($750 c/u)</x:String>
+                                                <x:String>🖥️ Ensamble Profesional de PC y Configuración BIOS ($1,200 c/u)</x:String>
+                                            </x:Array>
+                                        </Picker.ItemsSource>
+                                    </Picker>
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Button Text="Agregar servicio" Clicked="OnAgregarServicioClicked" Style="{StaticResource BtnPrimary}"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 2. BUSCADOR DE PIEZAS -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="02  PIEZAS (OPCIONAL SI SOLO ES SOFTWARE)" Style="{StaticResource SectionTitle}"/>
+
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                            <Button x:Name="btnModoPc" Grid.Column="0" Text="PC de escritorio" Clicked="OnModoPcClicked" BackgroundColor="{StaticResource Accent}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" FontSize="12" HeightRequest="40" CornerRadius="8"/>
+                            <Button x:Name="btnModoLaptop" Grid.Column="1" Text="Laptop (SODIMM)" Clicked="OnModoLaptopClicked" BackgroundColor="Transparent" BorderColor="{StaticResource Line}" BorderWidth="1" TextColor="{StaticResource TextMain}" FontSize="12" HeightRequest="40" CornerRadius="8"/>
+                        </Grid>
+
+                        <!-- Atajos modo laptop -->
+                        <Border x:Name="panelPiezasLaptop" IsVisible="False" Style="{StaticResource Panel}">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Atajos para laptop (memoria SODIMM)" Style="{StaticResource Caption}"/>
+                                <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                                    <Button Grid.Column="0" Text="DDR4 8GB" CommandParameter="SODIMM DDR4 8GB" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                    <Button Grid.Column="1" Text="DDR4 16GB" CommandParameter="SODIMM DDR4 16GB" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                </Grid>
+                                <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                                    <Button Grid.Column="0" Text="DDR5 8GB" CommandParameter="SODIMM DDR5 8GB" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                    <Button Grid.Column="1" Text="DDR5 16GB" CommandParameter="SODIMM DDR5 16GB" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                </Grid>
+                                <Button Text="SSD NVMe M.2 1TB" CommandParameter="SSD NVMe 1TB" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                            <Border Grid.Column="0" Style="{StaticResource Field}">
+                                <Entry x:Name="txtBuscarApi" Placeholder="Ej. Ryzen 5 9600X, DDR4 8GB, SSD 1TB" MaxLength="80" Completed="OnBuscarPrecioApiClicked"/>
+                            </Border>
+                            <Button Grid.Column="1" Text="Buscar" Clicked="OnBuscarPrecioApiClicked" Style="{StaticResource BtnPrimary}" HeightRequest="44" Padding="20,0"/>
+                        </Grid>
+
+                        <!-- Guía de compatibilidad -->
+                        <Border x:Name="panelCompatibilidadAuto" IsVisible="False" Style="{StaticResource Panel}">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label x:Name="lblTituloCompatibilidad" Grid.Column="0" Text="GUÍA DE COMPATIBILIDAD" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                                    <Button Grid.Column="1" Text="Ocultar" Clicked="OnOcultarGuiaClicked" Style="{StaticResource BtnSmall}" HeightRequest="28" FontSize="11"/>
+                                </Grid>
+
+                                <Label x:Name="lblResumenCompatibilidad" Text="" Style="{StaticResource Body}" FontSize="12"/>
+
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Tarjetas madre compatibles" Style="{StaticResource Caption}"/>
+                                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="6">
+                                        <Button x:Name="btnMob1" Grid.Column="0" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                        <Button x:Name="btnMob2" Grid.Column="1" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                        <Button x:Name="btnMob3" Grid.Column="2" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                    </Grid>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Gráficas ideales y RAM exacta" Style="{StaticResource Caption}"/>
+                                    <Grid ColumnDefinitions="*, *" ColumnSpacing="6">
+                                        <Button x:Name="btnGpu1" Grid.Column="0" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                        <Button x:Name="btnGpu2" Grid.Column="1" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*, *" ColumnSpacing="6">
+                                        <Button x:Name="btnGpu3" Grid.Column="0" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                        <Button x:Name="btnRamAuto" Grid.Column="1" Clicked="OnBotonSugerenciaClicked" Style="{StaticResource BtnChip}"/>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Abrir tiendas (todas con el mismo estilo) -->
+                        <Label Text="Abrir tienda en el navegador" Style="{StaticResource Caption}"/>
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                            <Button Grid.Column="0" Text="Zegucom" Clicked="OnAbrirZegucomClicked" Style="{StaticResource BtnChip}"/>
+                            <Button Grid.Column="1" Text="DDTech" Clicked="OnAbrirDdtechClicked" Style="{StaticResource BtnChip}"/>
+                            <Button Grid.Column="2" Text="Amazon MX" Clicked="OnAbrirAmazonClicked" Style="{StaticResource BtnChip}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
+                            <Button Grid.Column="0" Text="Mercado Libre" Clicked="OnAbrirMercadoLibreClicked" Style="{StaticResource BtnChip}"/>
+                            <Button Grid.Column="1" Text="Cyberpuerta" Clicked="OnAbrirCyberpuertaClicked" Style="{StaticResource BtnChip}"/>
+                        </Grid>
+
+                        <Label x:Name="lblEstadoApi" Text="Modo PC de escritorio activo. Cambia a Laptop si buscas RAM SODIMM." Style="{StaticResource Caption}"/>
+
+                        <!-- Resultados comparativos -->
+                        <Border x:Name="panelResultadosApi" IsVisible="False" Style="{StaticResource Panel}">
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                    <Label x:Name="lblTituloResultados" Grid.Column="0" Text="Ranking de precios" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                                    <Button Grid.Column="1" Text="Cerrar" Clicked="OnCerrarPanelApiClicked" Style="{StaticResource BtnSmall}" HeightRequest="30"/>
+                                </Grid>
+
+                                <VerticalStackLayout x:Name="listaResultadosApi" Spacing="0">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Stroke="{Binding ColorBorde}" StrokeThickness="1" BackgroundColor="{StaticResource Surface}" Padding="12,10" Margin="0,4">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="10"/>
+                                                </Border.StrokeShape>
+                                                <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="8" RowSpacing="8">
+
+                                                    <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                                                        <Label Text="{Binding NombreTienda}" TextColor="{StaticResource TextMain}" FontSize="11" FontAttributes="Bold" CharacterSpacing="0.8" VerticalOptions="Center"/>
+                                                        <Label Text="{Binding Etiqueta}" TextColor="{Binding ColorEtiqueta}" FontSize="10" VerticalOptions="Center"/>
+                                                    </HorizontalStackLayout>
+
+                                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding PrecioTexto}" TextColor="{Binding ColorPrecio}" FontAttributes="Bold" FontSize="18" VerticalOptions="Center"/>
+
+                                                    <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="2">
+                                                        <Label Text="{Binding Titulo}" Style="{StaticResource Body}" FontSize="12" MaxLines="3" LineBreakMode="TailTruncation"/>
+                                                        <Label Text="{Binding Tienda}" Style="{StaticResource Caption}" FontSize="10" LineBreakMode="WordWrap"/>
+                                                    </VerticalStackLayout>
+
+                                                    <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ColumnDefinitions="*,*" ColumnSpacing="8">
+                                                        <Button Grid.Column="0" Text="{Binding TextoVer}" Clicked="OnVerProductoClicked" CommandParameter="{Binding .}" Style="{StaticResource BtnSmall}"/>
+                                                        <Button Grid.Column="1" Text="Elegir" IsVisible="{Binding HayResultado}" Clicked="OnSeleccionarResultadoApiClicked" CommandParameter="{Binding .}" BackgroundColor="{StaticResource Accent}" BorderWidth="0" TextColor="{StaticResource OnAccent}" FontSize="12" FontAttributes="Bold" HeightRequest="34" CornerRadius="8"/>
+                                                    </Grid>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <BoxView HeightRequest="1" Color="{StaticResource Line}" Margin="0,4"/>
+
+                        <!-- Captura manual -->
+                        <Border Style="{StaticResource Field}">
+                            <Entry x:Name="txtDescripcion" Placeholder="Descripción del componente o concepto adicional" MaxLength="180"/>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*, 2*, 2*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Cant." Style="{StaticResource Caption}"/>
+                                <Border Style="{StaticResource Field}">
+                                    <Entry x:Name="txtCantidad" Text="1" MaxLength="2" TextChanged="OnSoloEnterosChanged" Keyboard="Numeric"/>
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Costo ($)" Style="{StaticResource Caption}"/>
+                                <Border Style="{StaticResource Field}">
+                                    <Entry x:Name="txtCostoInterno" Placeholder="Ej. 1299" MaxLength="9" Keyboard="Numeric" TextChanged="OnCostoInternoChanged"/>
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                <Label Text="Precio cliente (+12%)" Style="{StaticResource Caption}" TextColor="{StaticResource Accent}"/>
+                                <Border Style="{StaticResource Field}" Stroke="{StaticResource Accent}">
+                                    <Entry x:Name="txtPrecio" Placeholder="Ej. 1450" MaxLength="9" TextChanged="OnSoloDecimalesPrecioChanged" Keyboard="Numeric" FontAttributes="Bold"/>
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Button Text="Agregar a la cotización" Clicked="OnAgregarItemClicked" Style="{StaticResource BtnSecondary}"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 3. DESGLOSE -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Label Grid.Column="0" Text="03  DESGLOSE DE LA COTIZACIÓN" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                            <Button Grid.Column="1" Text="Limpiar" Clicked="OnLimpiarListaClicked" Style="{StaticResource BtnSmall}"/>
+                        </Grid>
+
+                        <CollectionView x:Name="listaConceptos" MaximumHeightRequest="240">
+                            <CollectionView.EmptyView>
+                                <Label Text="Aún no hay conceptos. Agrega un servicio o una pieza." Style="{StaticResource Caption}" HorizontalTextAlignment="Center" Padding="0,16"/>
+                            </CollectionView.EmptyView>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource Panel}" Padding="12,8" Margin="0,2">
+                                        <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10">
+                                            <Label Grid.Column="0" Text="{Binding Cantidad, StringFormat='{0}×'}" FontAttributes="Bold" TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
+                                            <Label Grid.Column="1" Text="{Binding Descripcion}" LineBreakMode="TailTruncation" Style="{StaticResource Body}" FontSize="12" VerticalOptions="Center"/>
+                                            <Label Grid.Column="2" Text="{Binding Total, StringFormat='${0:N0}'}" FontAttributes="Bold" TextColor="{StaticResource TextMain}" FontSize="13" VerticalOptions="Center"/>
+                                            <Button Grid.Column="3" Text="✕" Clicked="OnEliminarItemClicked" CommandParameter="{Binding .}" Style="{StaticResource BtnIconDanger}" HeightRequest="28" WidthRequest="32"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <BoxView HeightRequest="1" Color="{StaticResource Line}"/>
+
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="End">
+                            <Label x:Name="lblTotal" Text="TOTAL CLIENTE: $0.00 MXN" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextMain}" HorizontalTextAlignment="End"/>
+                            <Label x:Name="lblCostoTotal" Text="Costo interno (piezas + insumos/licencias): $0.00 MXN" Style="{StaticResource Caption}" HorizontalTextAlignment="End"/>
+                            <Label x:Name="lblGanancia" Text="GANANCIA: $0.00 MXN" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Positive}" HorizontalTextAlignment="End"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 4. NOTAS TÉCNICAS -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="04  NOTAS TÉCNICAS EN EL PDF" Style="{StaticResource SectionTitle}" Margin="0,0,0,6"/>
+
+                        <HorizontalStackLayout Spacing="6">
+                            <CheckBox x:Name="chkRam" IsChecked="False"/>
+                            <Label Text="Memoria RAM (Dual Channel / SODIMM)" VerticalOptions="Center" Style="{StaticResource Body}"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Spacing="6">
+                            <CheckBox x:Name="chkSsd" IsChecked="False"/>
+                            <Label Text="Almacenamiento SSD / NVMe" VerticalOptions="Center" Style="{StaticResource Body}"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Spacing="6">
+                            <CheckBox x:Name="chkMantenimiento" IsChecked="True"/>
+                            <Label Text="Mantenimiento térmico (pasta e isopropílico)" VerticalOptions="Center" Style="{StaticResource Body}"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Spacing="6">
+                            <CheckBox x:Name="chkSistema" IsChecked="False"/>
+                            <Label Text="Formateo / instalación de SO y licencias" VerticalOptions="Center" Style="{StaticResource Body}"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Spacing="6">
+                            <CheckBox x:Name="chkCpuGpu" IsChecked="False"/>
+                            <Label Text="Procesador / gráfica / placa madre" VerticalOptions="Center" Style="{StaticResource Body}"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Spacing="6">
+                            <CheckBox x:Name="chkEnfriamiento" IsChecked="False"/>
+                            <Label Text="Enfriamiento líquido / fuente" VerticalOptions="Center" Style="{StaticResource Body}"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label x:Name="lblEstadoBd" Text="" FontSize="12" HorizontalOptions="Center" HorizontalTextAlignment="Center" TextColor="{StaticResource TextMuted}"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- BARRA INFERIOR -->
+        <Border Grid.Row="1" BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource Line}" StrokeThickness="1" Padding="16,12">
+            <Border.StrokeShape>
+                <Rectangle/>
+            </Border.StrokeShape>
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10" MaximumWidthRequest="920">
+                <Button Grid.Column="0" Text="Guardar y generar PDF" Clicked="OnGenerarPdfClicked" Style="{StaticResource BtnPrimary}" HeightRequest="48"/>
+                <Button Grid.Column="1" Text="Enviar por WhatsApp" Clicked="OnEnviarMensajeDirectoClicked" Style="{StaticResource BtnSecondary}" HeightRequest="48"/>
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>
